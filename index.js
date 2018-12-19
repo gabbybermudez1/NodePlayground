@@ -18,13 +18,22 @@ app.get('/', (req,res) => {
 
 
 // an object with username and password attributes can be retrieved with req.body.username and req.body.password
+// Remember: 
+//  Querying is done with the Model. Saving is done via the individual document.
 app.post('/users/', (req, res) => {
-    let username = req.body.username;
-    let password = req.body.password; 
+    let user = new User({
+        username: req.body.username,
+        password: req.body.password
+    });
 
-    User.findOne({ username: username })
-        .then( result => {
-            console.log(result);
+    User.findOne({username: user.username})
+        .then( retrievedUsername => {
+            if (retrievedUsername == null){
+                user.save()
+                    .then( savedDoc => res.send('Saved the document!'))
+                    .catch( e => res.status(400).send(e));    
+            }
+            res.send('That user already exists');
         });
 });
 
