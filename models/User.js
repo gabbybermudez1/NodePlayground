@@ -11,7 +11,19 @@ const User = mongoose.model("User", {
         type: String,
         required: true,
         minLength: 3
-    }
+    },
+    token:[
+        {
+           accessType:{
+               type: String,
+               required: true
+           },
+           authToken:{
+               type:String,
+               required: true
+           }
+        }
+    ]
 });
 
 module.exports ={

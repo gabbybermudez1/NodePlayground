@@ -23,7 +23,8 @@ app.get('/', (req,res) => {
 app.post('/users/', (req, res) => {
     let user = new User({
         username: req.body.username,
-        password: req.body.password
+        password: req.body.password,
+        token: []
     });
 
     User.findOne({username: user.username})
@@ -33,9 +34,15 @@ app.post('/users/', (req, res) => {
                     .then( savedDoc => res.send('Saved the document!'))
                     .catch( e => res.status(400).send(e));    
             }
-            res.send('That user already exists');
-        });
+            else{
+                res.send("That user already exists! Please Try again!");
+            }
+        })
+        .catch( e => res.status(400).send(e));
 });
+
+
+
 
 app.listen(8080, ()=>{
     console.log('Express web server is beginning');
