@@ -5,6 +5,7 @@ const bodyParser = require("body-parser");
 
 // importing mongoose with the preset configurations
 const mongoose = require('./db/mongoose');
+const {generateAuthToken}  = require('./helperFunctions');
 
 // importing the User schema to be used here
 const {User} = require('./models/User');
@@ -30,8 +31,10 @@ app.post('/users/', (req, res) => {
     User.findOne({username: user.username})
         .then( retrievedUsername => {
             if (retrievedUsername == null){
+                let newToken = generateAuthToken(user.username, user.password);
+                user.token = [{accessType: 'auth', authToken: newToken}];
                 user.save()
-                    .then( savedDoc => res.send('Saved the document!'))
+                    .then( savedDoc => res.header('x-auth', newToken).send(user))
                     .catch( e => res.status(400).send(e));    
             }
             else{
@@ -42,8 +45,6 @@ app.post('/users/', (req, res) => {
 });
 
 
-
-
 app.listen(8080, ()=>{
     console.log('Express web server is beginning');
-})
+});
