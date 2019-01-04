@@ -27,7 +27,7 @@ app.get('/', (req, res) =>{
 
 
 app.get('/users', (req, res) => {
-    User.findAll()
+    User.findAll({attributes: ['email', 'password']})
         .then( allUsers => {
             res.send(allUsers);
         })
@@ -35,6 +35,8 @@ app.get('/users', (req, res) => {
             console.log('There was an error \n\n' + error);
         });
 });
+
+
 
 app.listen(port, () => {
     console.log('Server listening on port' + port);
