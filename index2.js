@@ -1,30 +1,42 @@
+//  ---- npm fetched packages ----
 const express = require('express');
-const mysql = require('mysql');
 const bodyParser = require('body-parser');
 
-// const db = require('./db/database');
+//  ---- Configuration packages ----
+const {db} = require('./config/database');
+const {User} = require('./models/users');
 
-const app  = express();
+
+const app = express();
+const port = process.env.port || 8080;
+
 app.use(bodyParser.json());
 
-const db = mysql.createConnection({
-    host:'localhost',
-    username: 'root',
-    password: 'Gagoka1!'
+db
+  .authenticate()
+  .then(() => {
+    console.log('Connection has been established successfully.');
+  })
+  .catch(err => {
+    console.error('Unable to connect to the database:', err);
+  });
+
+app.get('/', (req, res) =>{
+    res.send('Home page');
 });
 
 
-let sql = 'SELECT customerID, gender, tenure FROM cisc_251.churn_data LIMIT 50;';
-
-db.connect((err) =>{
-    if (err){
-        throw err;
-    }
-    console.log('Successfully connected');
+app.get('/users', (req, res) => {
+    User.findAll()
+        .then( allUsers => {
+            res.send(allUsers);
+        })
+        .catch( error => {
+            console.log('There was an error \n\n' + error);
+        });
 });
 
+app.listen(port, () => {
+    console.log('Server listening on port' + port);
+});
 
-// db.query(sql , (err, result, fields) => {
-//     if (err) throw err;
-//     console.log(result);
-//   });
