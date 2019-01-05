@@ -42,6 +42,7 @@ app.get('/compute', (req, res) => {
     console.log('Reached the compute route');
     let dataString = "";
     let pyScript = spawn('python', ['./pythonScripts/helloworld.py']);
+    //When there is screen output(stdout) add the data
     pyScript.stdout.on('data', (data) =>{
         console.log('received some data')
         dataString += data.toString();
@@ -50,6 +51,8 @@ app.get('/compute', (req, res) => {
         console.log(dataString);
         res.send(dataString);
     });
+    pyScript.stdin.write(JSON.stringify([1,2,3]));
+    pyScript.stdin.end();
     
 });
 
