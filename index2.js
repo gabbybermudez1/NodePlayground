@@ -1,8 +1,10 @@
-//  ---- npm fetched packages ----
+// ---- NPM fetched packages or node js standard libraries ----
 const express = require('express');
 const bodyParser = require('body-parser');
+const spawn = require('child_process').spawn;
 
-//  ---- Configuration packages ----
+
+// ---- Original code ----
 const {db} = require('./config/database');
 const {User} = require('./models/users');
 
@@ -27,7 +29,7 @@ app.get('/', (req, res) =>{
 
 
 app.get('/users', (req, res) => {
-    User.findAll({attributes: ['email', 'password']})
+    User.findAll({attributes: ['email', 'username']})
         .then( allUsers => {
             res.send(allUsers);
         })
@@ -36,9 +38,22 @@ app.get('/users', (req, res) => {
         });
 });
 
-
+app.get('/compute', (req, res) => {
+    console.log('Reached the compute route');
+    let dataString = "";
+    let pyScript = spawn('python', ['./pythonScripts/helloworld.py']);
+    pyScript.stdout.on('data', (data) =>{
+        console.log('received some data')
+        dataString += data.toString();
+    });
+    pyScript.stdout.on('end', () =>{
+        console.log(dataString);
+        res.send(dataString);
+    });
+    
+});
 
 app.listen(port, () => {
-    console.log('Server listening on port' + port);
+    console.log('Server listening on port ' + port);
 });
 
