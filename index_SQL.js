@@ -41,20 +41,23 @@ app.get('/users', (req, res) => {
 app.get('/compute', (req, res) => {
     console.log('Reached the compute route');
     let dataString = "";
-    let pyScript = spawn('python', ['./pythonScripts/helloworld.py']);
+    let pyScript = spawn('python', ['./pythonScripts/mathModule.py']);
+
+    pyScript.stdin.write(JSON.stringify([[1,0],[0,1]]));
+    pyScript.stdin.end();
+
     //When there is screen output(stdout) add the data
     pyScript.stdout.on('data', (data) =>{
         console.log('received some data')
         dataString += data.toString();
     });
+    // upon the end of the standard output, send this as the response
     pyScript.stdout.on('end', () =>{
         console.log(dataString);
         res.send(dataString);
     });
-    pyScript.stdin.write(JSON.stringify([1,2,3]));
-    pyScript.stdin.end();
-    
 });
+
 
 app.listen(port, () => {
     console.log('Server listening on port ' + port);
